@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.API", "KERP.API\KERP.API.csproj", "{DC9F85A4-0E3A-4AE4-B29C-1A6E955FF2CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.Core", "KERP.Core\KERP.Core.csproj", "{7E48BA7A-A021-4A78-8DEF-91322CE18927}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.Infrastructure", "KERP.Infrastructure\KERP.Infrastructure.csproj", "{A5CBFD01-E131-446C-8DC3-CCB2A7F329DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC9F85A4-0E3A-4AE4-B29C-1A6E955FF2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC9F85A4-0E3A-4AE4-B29C-1A6E955FF2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC9F85A4-0E3A-4AE4-B29C-1A6E955FF2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC9F85A4-0E3A-4AE4-B29C-1A6E955FF2CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E48BA7A-A021-4A78-8DEF-91322CE18927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E48BA7A-A021-4A78-8DEF-91322CE18927}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E48BA7A-A021-4A78-8DEF-91322CE18927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E48BA7A-A021-4A78-8DEF-91322CE18927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5CBFD01-E131-446C-8DC3-CCB2A7F329DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5CBFD01-E131-446C-8DC3-CCB2A7F329DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5CBFD01-E131-446C-8DC3-CCB2A7F329DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5CBFD01-E131-446C-8DC3-CCB2A7F329DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A09E66DA-6137-4212-AF8E-F3BC761AB689}
+	EndGlobalSection
+EndGlobal

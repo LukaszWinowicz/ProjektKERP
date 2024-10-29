@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.Client", "KERP.Client.csproj", "{E6E0DEB9-AF3B-461F-9107-AE5962F95DD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6E0DEB9-AF3B-461F-9107-AE5962F95DD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6E0DEB9-AF3B-461F-9107-AE5962F95DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6E0DEB9-AF3B-461F-9107-AE5962F95DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6E0DEB9-AF3B-461F-9107-AE5962F95DD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F7C2C69-AD6C-41D1-8649-6CDA7E6AC8F0}
+	EndGlobalSection
+EndGlobal

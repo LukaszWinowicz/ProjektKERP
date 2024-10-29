@@ -1,0 +1,7 @@
+# DotNet
+bin/
+obj/
+*.log
+.vscode/
+.idea/
+.vs/

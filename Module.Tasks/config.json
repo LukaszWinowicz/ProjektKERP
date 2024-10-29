@@ -1,0 +1,20 @@
+{
+  "DatabaseLN": {
+    "Server": "",
+    "Database": "",
+    "UserId": "",
+    "Password": ""
+  },
+  "Sftp": {
+    "Host": "",
+    "Port": ,
+    "Username": "",
+    "Password": ""
+  },
+  "Smtp": {
+    "SmtpServer": "",
+    "Port": ,
+    "Email": "",
+    "Password": ""
+  }
+}
