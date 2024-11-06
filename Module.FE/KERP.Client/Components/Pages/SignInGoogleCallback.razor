@@ -1,0 +1,54 @@
+﻿@* This is a callback page where Google redirects the user after successful authentication *@
+
+@page "/signin-google"
+@attribute [AllowAnonymous]
+
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Navigation
+@inject CustomAuthenticationStateProvider AuthStateProvider
+
+@using KERP.Client.DTOs
+@using KERP.Client.Services.Auth
+@using Microsoft.AspNetCore.Authorization
+
+<p Text="Hang on, we're signing you in.."></p>
+
+@code
+{
+// The authorization code sent by Google after successful authentication
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? AuthorizationCode { get; set; }
+
+// Optional state included in the redirect URI
+    [SupplyParameterFromQuery(Name = "state")]
+    public string? State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(AuthorizationCode))
+        {
+            using var client = HttpClientFactory.CreateClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/auth/signin/google");
+            request.Headers.Authorization = new("Bearer", AuthorizationCode);
+
+            try
+            {
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    var user = await response.Content.ReadFromJsonAsync<User>();
+                    
+                    await AuthStateProvider.SetCurrentUserAsync(user);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+// Return the user back to the page they were on (defaults to the main page)
+        Navigation.NavigateTo("/", replace: true);
+    }
+}

@@ -1,5 +1,7 @@
 ﻿@page "/login"
+@using KERP.Client.Services.Auth
 @inject IJSRuntime JSRuntime
+@inject IdentityProviderService IdentityProvider
 
 <div class="login-container">
     <div class="login-card">
@@ -14,7 +16,7 @@
                 <span>To view this page, log in.</span>
             </div>
         </div>
-        <button class="google-login-button" @onclick="HandleGoogleLogin">
+        <button class="google-login-button" @onclick="IdentityProvider.AuthenticateWithGoogle">
             <span class="google-logo-container">
                 <img src="images/google-logo.svg" alt="Google logo" />
             </span>

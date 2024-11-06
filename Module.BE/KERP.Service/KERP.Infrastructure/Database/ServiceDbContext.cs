@@ -1,15 +1,18 @@
-﻿using KERP.Core.Entities;
+﻿using KERP.API.Models.Entities;
+using KERP.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace KERP.Infrastructure.Database
 {
-    public class ServiceDbContext : DbContext
+    public class ServiceDbContext : IdentityDbContext
     {
         public ServiceDbContext(DbContextOptions<ServiceDbContext> options)
         : base(options)
         {
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<MassUpdatePurchase> MassUpdatePurchase { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
 
