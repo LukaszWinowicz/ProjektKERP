@@ -26,8 +26,4 @@
     <ProjectReference Include="..\KERP.Infrastructure\KERP.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="Components\Pages\_Host.cshtml" />
-  </ItemGroup>
-
 </Project>
