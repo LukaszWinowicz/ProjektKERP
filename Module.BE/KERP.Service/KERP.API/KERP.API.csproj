@@ -16,12 +16,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.3" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KERP.Core\KERP.Core.csproj" />
     <ProjectReference Include="..\KERP.Infrastructure\KERP.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Pages\_Host.cshtml" />
   </ItemGroup>
 
 </Project>

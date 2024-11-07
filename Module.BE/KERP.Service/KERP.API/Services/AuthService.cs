@@ -10,7 +10,6 @@ namespace KERP.API.Services;
 public interface IAuthService
 {
     Task<Result<AuthResponse>> AuthenticateWithGoogleAsync(string authorizationCode, CancellationToken cancellationToken = default);
-    Task<Result<SignInResponse>> SignInAsync(AuthResponse AuthResponse, CancellationToken cancellationToken = default);
 }
 
 internal sealed class AuthService(
@@ -61,7 +60,8 @@ internal sealed class AuthService(
                 ProfilePicture: validatedUser.Picture,
                 ExternalId: validatedUser.Subject,
                 Username: validatedUser.Name,
-                Email: validatedUser.Email
+                Email: validatedUser.Email,
+                Name: validatedUser.GivenName
             ));
         }
         catch (InvalidJwtException e)
@@ -72,59 +72,6 @@ internal sealed class AuthService(
         {
             return Result.Failure<AuthResponse>(errorMessage: $"Encountered an error during id_token validation. {e.Message}");
         }
-    }
-
-    public async Task<Result<SignInResponse>> SignInAsync(AuthResponse AuthResponse, CancellationToken cancellationToken = default)
-    {
-        User appUser;
-
-        var existingUser = await userService.GetByExternalIdAsync(AuthResponse.ExternalId, cancellationToken);
-        if (existingUser.IsSuccess)
-        {
-            appUser = existingUser.Payload;
-
-            if (UserInfoChanged(currentInfo: appUser, newInfo: AuthResponse))
-            {
-                appUser.ProfilePicture = AuthResponse.ProfilePicture;
-                appUser.Username = AuthResponse.Username;
-                appUser.Email = AuthResponse.Email;
-                await userService.UpdateAsync(appUser, CancellationToken.None);
-            }
-        }
-        else
-        {
-            var createUser = await userService.CreateAsync(new()
-            {
-                ProfilePicture = AuthResponse.ProfilePicture,
-                ExternalId = AuthResponse.ExternalId,
-                Username = AuthResponse.Username,
-                Email = AuthResponse.Email,
-            }, CancellationToken.None);
-
-            if (createUser.IsSuccess)
-            {
-                appUser = createUser.Payload;
-            }
-            else
-            {
-                return Result.Failure<SignInResponse>(errorMessage: createUser.Message);
-            }
-        }
-
-        var accessTokenResult = tokenService.GenerateAccessToken(appUser);
-        if (accessTokenResult.IsFailure)
-            return Result.Failure<SignInResponse>(errorMessage: accessTokenResult.Message);
-
-        var refreshTokenResult = tokenService.GenerateRefreshToken(appUser);
-        if (refreshTokenResult.IsFailure)
-            return Result.Failure<SignInResponse>(errorMessage: refreshTokenResult.Message);
-
-        appUser.RefreshToken = refreshTokenResult.Payload.Value;
-        appUser.RefreshTokenExpiresUtc = refreshTokenResult.Payload.ExpiresUtc;
-        appUser.SignInCount++;
-
-        await userService.UpdateAsync(appUser, CancellationToken.None);
-        return Result.Success(new SignInResponse(accessTokenResult.Payload, refreshTokenResult.Payload));
     }
 
     private bool UserInfoChanged(User currentInfo, AuthResponse newInfo) => 

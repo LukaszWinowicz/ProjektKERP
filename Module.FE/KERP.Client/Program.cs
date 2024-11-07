@@ -3,24 +3,20 @@ using KERP.Client.Services;
 using KERP.Client.Services.Auth;
 using KERP.Client.Settings;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // Add services to the container.
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddFluentUIComponents();
 
-builder.Services.AddAuthorization();
 builder.Services.AddSingleton<MassUpdatePurchaseApi>();
 builder.Services.AddScoped<IdentityProviderService>();
 builder.Services.AddScoped<TokenService>();
@@ -43,4 +39,21 @@ builder.Services.AddHttpClient("", (serviceProvider, httpClient) =>
 
 var app = builder.Build();
 
-await app.RunAsync();
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+app.UseCookiePolicy();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();

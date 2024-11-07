@@ -13,8 +13,11 @@ namespace KERP.API.Controllers;
 
 [ApiController]
 [Route("signin-google")]
-public class AuthController(IOptions<AuthOptions> authenticationOptions,
-    IAuthService authService, SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager) : ControllerBase
+public class AuthController(
+    IOptions<AuthOptions> authenticationOptions,
+    IAuthService authService,
+    SignInManager<IdentityUser> signInManager,
+    UserManager<IdentityUser> userManager) : ControllerBase
 {
     [HttpGet]
     [Route("redirect/google")]
@@ -34,7 +37,7 @@ public class AuthController(IOptions<AuthOptions> authenticationOptions,
             $"state={state}&" +
             $"nonce={Guid.NewGuid()}";
 
-        return Ok(googleAuthUrl);
+        return Redirect(googleAuthUrl);
     }
 
     [HttpGet]
@@ -48,7 +51,7 @@ public class AuthController(IOptions<AuthOptions> authenticationOptions,
         {
             return Unauthorized();
         }
-        
+
         var user = await userManager.FindByEmailAsync(authenticationResult.Payload.Email);
         if (user == null)
         {
@@ -61,34 +64,14 @@ public class AuthController(IOptions<AuthOptions> authenticationOptions,
             await userManager.CreateAsync(user);
         }
 
+        await userManager.AddClaimAsync(user, new Claim("GivenName", authenticationResult.Payload.Name));
         var claims = await userManager.GetClaimsAsync(user);
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        await HttpContext.SignInAsync(claimsPrincipal, new AuthenticationProperties { IsPersistent = true });
+        await signInManager.SignInAsync(user, isPersistent: true);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal,
+            new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTime.UtcNow.AddDays(30) });
 
-        return Ok(new UserResponse()
-        {
-            Id = user.Id,
-            Username = user.UserName
-        });
-    }
-    
-    private static bool TryGetAuthorizationToken(IHeaderDictionary requestHeaders, out string? authorizationToken)
-    {
-        authorizationToken = null;
-
-        string? authorizationHeaderValue = requestHeaders.Authorization;
-        if (authorizationHeaderValue is null)
-        {
-            return false;
-        }
-
-        if (!authorizationHeaderValue.StartsWith("bearer", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        authorizationToken = authorizationHeaderValue.Remove(0, "bearer".Length).Trim();
-        return true;
+        return Redirect("/");
     }
 }

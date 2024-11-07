@@ -1,4 +1,5 @@
 using Azure.Identity;
+using KERP.API.Components;
 using KERP.API.Options;
 using KERP.API.Services;
 using KERP.Core.Interfaces.Repositories;
@@ -8,14 +9,17 @@ using KERP.Infrastructure.Database;
 using KERP.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddFluentUIComponents();
 builder.Services.AddHttpClient();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,27 +41,9 @@ builder.Services
         options.SignIn.RequireConfirmedAccount = true;
     })
     .AddEntityFrameworkStores<ServiceDbContext>();
-    
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(b => b
-        .WithOrigins("https://127.0.0.1:7000")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials());
-});
 
 builder.Services.AddAuthentication()
-    .AddCookie(options =>
-    {
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.None;
-
-        options.Events.OnRedirectToAccessDenied = (context) => throw new AuthenticationFailedException("");
-        options.Events.OnRedirectToLogin = (context) => throw new AuthenticationFailedException("");
-    });
+    .AddCookie();
 
 var app = builder.Build();
 
@@ -69,15 +55,15 @@ if (app.Environment.IsDevelopment())
     app.UseWebAssemblyDebugging();
 }
 
-app.UseBlazorFrameworkFiles();
-app.MapFallbackToFile("index.html");
-
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseStaticFiles();
+app.UseAntiforgery();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapRazorComponents<App>() // Map Razor components
+    .AddInteractiveServerRenderMode();
 
 app.Run();

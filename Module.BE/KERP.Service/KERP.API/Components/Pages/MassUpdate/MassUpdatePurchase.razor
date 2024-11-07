@@ -1,0 +1,109 @@
+﻿@page "/mass-update-purchase"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.FluentUI.AspNetCore.Components
+@using KERP.Client.Services
+@using KERP.Client.DTOs.MassUpdate
+@inject IDialogService DialogService
+@inject IMessageService MessageService
+@inject MassUpdatePurchaseApi PurchaseApi
+@rendermode InteractiveServer
+
+<h3>Mass Update Purchase</h3>
+
+<div style="display: flex; flex-direction: row; gap: 20px;">
+    <!-- Lewa strona - formularz -->
+        <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" style="flex-basis: 25%;">
+
+        <FluentLabel Typo="Typography.Header" Style="margin-bottom: 10px;">Dodaj pojedyńczy wpis:</FluentLabel>
+        <DataAnnotationsValidator />
+        <FluentValidationSummary/>
+        <div style="display: flex; flex-direction: column; gap: 10px; height: 400px; width:300px; padding: 10px;">
+            <div>
+                <FluentTextField @bind-Value=model.PurchaseOrder Label="Purchase order:" style="width: 70%;" @oninput="HandleInputChange" />
+            </div>
+            <div>
+                <FluentNumberField @bind-Value=model.LineNumber Label="Line number:" Min="10" style="width: 70%;" />
+            </div>
+            <div>
+                <FluentNumberField @bind-Value=model.Sequence Label="Sequence:" Min="1" style="width: 70%;" />
+            </div>
+            <div>
+                <FluentDatePicker @bind-Value=model.ConfirmedReceiptDate Label="Confirmed receipt date:" Placeholder="dd.mm.yyyy" style="width: 70%;" />
+            </div>
+            <div>
+                <FluentDatePicker @bind-Value=model.ChangedReceiptDate Label="Changed receipt date:" Placeholder="dd.mm.yyyy" style="width: 70%;" />
+            </div>
+            <div>
+                <FluentButton Appearance="Appearance.Accent" Type=ButtonType.Submit Style ="margin-top: 10px;">Dodaj wiersz</FluentButton>
+            </div>
+        </div>
+    </EditForm>
+
+    <!-- Prawa strona - uploader plików -->
+    <div style="flex-basis: 75%;">
+        <FluentLabel Typo="Typography.Header" Style="margin-bottom: 10px;">Wklej z Google Sheets. Kolumny: PO, Line, Sequence, Confirmed Receipt, Changed Receipt.:</FluentLabel>
+        <FluentInputFile Id="my-file-uploader"
+                         Mode="InputFileMode.SaveToTemporaryFolder"
+                         Multiple="true"
+                         MaximumFileCount="4"
+                         MaximumFileSize="@(10*1024*1024)"
+                         Accept="image/*"
+                         Style="height: 360px; width: 900px; border: 1px dashed var(--accent-fill-rest);">
+            <ChildContent>
+                <label for="my-file-uploader">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.Copy())" />
+                </label>
+            </ChildContent>
+        </FluentInputFile>
+
+        <!-- Przycisk 'Dodaj listę' umieszczony poniżej -->
+        <FluentButton Appearance="Appearance.Accent" Style="margin-top: 10px;">Dodaj listę</FluentButton>
+    </div>
+</div>
+
+@code {
+    private MassUpdatePurchaseDto model = new MassUpdatePurchaseDto();
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
+
+    /*private bool isFormValid =>
+        !string.IsNullOrWhiteSpace(model.PurchaseOrder) &&
+        model.PurchaseOrder.Length == 9 &&
+        model.LineNumber.HasValue &&
+        model.Sequence.HasValue &&
+        (model.ConfirmedReceiptDate.HasValue || model.ChangedReceiptDate.HasValue);*/
+
+    protected override void OnInitialized()
+    {
+        // Inicjalizacja EditContext
+        editContext = new EditContext(model);
+        messageStore = new ValidationMessageStore(editContext);
+    }
+
+    private void HandleInputChange(ChangeEventArgs e)
+    {
+        // Usuwanie błędów walidacyjnych, jeśli użytkownik poprawił dane
+        messageStore.Clear(() => model.PurchaseOrder);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        bool purchaseOrderExists = PurchaseApi.CheckThatPurchaseOrderExist(model);
+        if (!purchaseOrderExists)
+        {
+            // messageStore.Clear();
+            messageStore.Add(() => model.PurchaseOrder, "Podany Purchase Order nie istnieje.");
+            editContext.NotifyValidationStateChanged();
+        }
+
+        bool concatenationExists = PurchaseApi.CheckThatConcatenationExist(model);
+        if (!concatenationExists)
+        {
+            messageStore.Add(() => model.PurchaseOrder, "Brak lini z podanymi parametrmia: Purchase Order / Line Number / Sequence");
+            editContext.NotifyValidationStateChanged();
+        }
+    }
+ }
+
+ @* https://learn.microsoft.com/pl-pl/aspnet/core/blazor/components/render-modes?view=aspnetcore-8.0 *@
